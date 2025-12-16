@@ -31,6 +31,7 @@ export default function DecisionForm() {
   const [mediumRisk, setMediumRisk] = useState<YesNo>(null)
   const [secondOpinion, setSecondOpinion] = useState<YesNo>(null)
   const [status, setStatus] = useState<string>("Open")
+  const [goodSignals, setGoodSignals] = useState<YesNo>(null)
 
   const [suspensionAction, setSuspensionAction] = useState<SuspensionAction>("")
 
@@ -41,7 +42,7 @@ export default function DecisionForm() {
       nextStatus = "Needs Second Opinion"
     } else if (platform === "yes" && (highRisk === "yes" || mediumRisk === "yes")) {
       nextStatus = "Outreach"
-    } else if (highRisk === "yes" || mediumRisk === "yes" || visualDirectory === "yes") {
+    } else if (highRisk === "yes" || mediumRisk === "yes" || visualDirectory === "yes" || goodSignals === "yes") {
       nextStatus = "Ready to Action"
     } else {
       nextStatus = "Open"
@@ -57,7 +58,7 @@ export default function DecisionForm() {
     value === selected ? "bg-primary text-primary-foreground border-primary" : ""
 
   return (
-    <div className="w-96 border-l border-border bg-card flex flex-col">
+    <div className="w-full max-w-[480px] border-l border-border bg-card flex flex-col">
       {/* PROGRESS BAR */}
       <div className="border-b border-border px-3 pt-3 pb-2">
         <div className="flex justify-between items-center mb-2">
@@ -79,7 +80,7 @@ export default function DecisionForm() {
                     }`}
                   />
                   <span
-                    className={`text-[9px] text-center ${
+                    className={`text-[10px] text-center ${
                       isCompletedOrActive ? "font-semibold" : ""
                     }`}
                   >
@@ -109,9 +110,10 @@ export default function DecisionForm() {
 
             <CardContent className="space-y-4">
               {/* NEW QUESTION - Visual Directory */}
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <p className="text-xs text-foreground">Is this a Visual Directory?</p>
+                  <p className="text-sm font-semibold text-foreground">Is this a Visual Directory?</p>
+
 
                   <TooltipProvider>
                     <Tooltip>
@@ -153,7 +155,7 @@ export default function DecisionForm() {
 
               {/* Question 1 - Platform/Enterprise */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground">Is this a Platform/Enterprise?</p>
+                <p className="text-sm font-semibold text-foreground">Is this a Platform/Enterprise?</p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -176,7 +178,7 @@ export default function DecisionForm() {
 
               {/* Question 2 - High Risk Signal (textarea removed) */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground">
+                <p className="text-sm font-semibold text-foreground">
                  After reviewing the AI opinion, did you confirm at least 1 High-Risk signal?
                 </p>
                 <div className="flex gap-2">
@@ -201,7 +203,7 @@ export default function DecisionForm() {
 
               {/* Question 3 - Medium Risk Signal (textarea removed) */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground">
+                <p className="text-sm font-semibold text-foreground">
                   After reviewing the AI opinion, did you confirm at least 3 Medium-Risk signals?
                 </p>
                 <div className="flex gap-2">
@@ -223,25 +225,26 @@ export default function DecisionForm() {
                   </Button>
                 </div>
               </div>
+              
               {/* Question 4 - Good Signals */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground">
+                <p className="text-sm font-semibold text-foreground">
                   After reviewing the AI opinion, Did you confirm any Non-Risk (Good) signals?
                 </p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 ${yesClass(mediumRisk, "yes")}`}
-                    onClick={() => setMediumRisk("yes")}
+                    className={`flex-1 ${yesClass(goodSignals, "yes")}`}
+                    onClick={() => setGoodSignals("yes")}
                   >
                     YES
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className={`flex-1 ${yesClass(mediumRisk, "no")}`}
-                    onClick={() => setMediumRisk("no")}
+                    className={`flex-1 ${yesClass(goodSignals, "no")}`}
+                    onClick={() => setGoodSignals("no")}
                   >
                     NO
                   </Button>
@@ -249,7 +252,7 @@ export default function DecisionForm() {
               </div>
               {/* Question 4 - Second Opinion */}
               <div className="space-y-2">
-                <p className="text-xs text-foreground">Is a Second Opinion Needed?</p>
+                <p className="text-sm font-semibold text-foreground">Is a Second Opinion Needed?</p>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
@@ -269,14 +272,14 @@ export default function DecisionForm() {
                   </Button>
                 </div>
                 <Textarea
-                  placeholder="Reason why a Second Opinion is Needed"
-                  className="text-xs min-h-[60px]"
+                  placeholder="Please explain why a second opinion is needed"
+                  className="text-xs min-h-[30px]"
                 />
               </div>
 
               {/* Suspension Reasons */}
               <div className="space-y-2">
-                <p className="text-xs font-semibold">Suspension Reasons:</p>
+                <p className="text-sm font-semibold text-foreground">Suspension Reasons:</p>
                 <Select>
                   <SelectTrigger className="text-xs">
                     <SelectValue placeholder="Suspension Reasons" />
@@ -292,7 +295,7 @@ export default function DecisionForm() {
 
               {/* Suspension Actions */}
               <div className="space-y-2">
-                <p className="text-xs font-semibold">Suspension Actions:</p>
+                <p className="text-sm font-semibold text-foreground">Suspension Actions:</p>
                 <Select
                   value={suspensionAction}
                   onValueChange={(v) => setSuspensionAction(v as SuspensionAction)}
@@ -310,7 +313,7 @@ export default function DecisionForm() {
 
               {/* Notes */}
               <div className="space-y-2 pt-4">
-                <p className="text-xs font-semibold">Notes:</p>
+                <p className="text-sm font-semibold text-foreground">Notes:</p>
                 <Textarea
                   placeholder="Add any additional notes here..."
                   className="text-xs min-h-[80px]"
@@ -319,7 +322,7 @@ export default function DecisionForm() {
 
               {/* Upload Evidence */}
               <div className="space-y-2">
-                <p className="text-xs font-semibold">Upload Evidence:</p>
+                <p className="text-sm font-semibold text-foreground">Upload Evidence:</p>
                 <label
                   htmlFor="file-upload"
                   className="flex flex-col items-center justify-center border-2 border-dashed border-border rounded-md p-4 cursor-pointer hover:bg-muted/50 transition-colors"
@@ -352,7 +355,7 @@ export default function DecisionForm() {
                         </button>
                       </TooltipTrigger>
                       <TooltipContent className="max-w-[220px] text-xs">
-                        Please Select only if is a VD, repetitive abuse or common schemes
+                       Select only if this case relates to VD, repeated abuse, or a common scheme.
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>

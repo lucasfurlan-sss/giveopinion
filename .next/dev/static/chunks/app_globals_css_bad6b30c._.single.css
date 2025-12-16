@@ -64,9 +64,6 @@
     --color-red-300: #ffa3a3;
     --color-red-400: #ff6568;
     --color-red-600: #e40014;
-    --color-yellow-500: #edb200;
-    --color-green-500: #00c758;
-    --color-blue-500: #3080ff;
     --color-black: #000;
     --color-white: #fff;
     --spacing: .25rem;
@@ -107,9 +104,6 @@
       --color-red-300: lab(76.5514% 36.422 15.5335);
       --color-red-400: lab(63.7053% 60.745 31.3109);
       --color-red-600: lab(48.4493% 77.4328 61.5452);
-      --color-yellow-500: lab(76.3898% 14.5258 98.4589);
-      --color-green-500: lab(70.5521% -66.5147 45.8073);
-      --color-blue-500: lab(54.1736% 13.3369 -74.6839);
     }
   }
 }
@@ -874,10 +868,6 @@
     height: 1px;
   }
 
-  .h-screen {
-    height: 100vh;
-  }
-
   .h-svh {
     height: 100svh;
   }
@@ -1020,6 +1010,14 @@
 
   .max-w-\(--skeleton-width\) {
     max-width: var(--skeleton-width);
+  }
+
+  .max-w-\[220px\] {
+    max-width: 220px;
+  }
+
+  .max-w-\[240px\] {
+    max-width: 240px;
   }
 
   .max-w-\[calc\(100\%-2rem\)\] {
@@ -1562,10 +1560,6 @@
     }
   }
 
-  .bg-blue-500 {
-    background-color: var(--color-blue-500);
-  }
-
   .bg-border {
     background-color: var(--border);
   }
@@ -1580,10 +1574,6 @@
 
   .bg-foreground {
     background-color: var(--foreground);
-  }
-
-  .bg-green-500 {
-    background-color: var(--color-green-500);
   }
 
   .bg-input {
@@ -1601,16 +1591,6 @@
   @supports (color: color-mix(in lab, red, red)) {
     .bg-muted-foreground\/30 {
       background-color: color-mix(in oklab, var(--muted-foreground) 30%, transparent);
-    }
-  }
-
-  .bg-muted-foreground\/40 {
-    background-color: var(--muted-foreground);
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .bg-muted-foreground\/40 {
-      background-color: color-mix(in oklab, var(--muted-foreground) 40%, transparent);
     }
   }
 
@@ -1660,10 +1640,6 @@
 
   .bg-white {
     background-color: var(--color-white);
-  }
-
-  .bg-yellow-500 {
-    background-color: var(--color-yellow-500);
   }
 
   .fill-current {

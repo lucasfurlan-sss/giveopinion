@@ -7,7 +7,8 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Upload } from "lucide-react"
+import { Upload, Info } from "lucide-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 type YesNo = "yes" | "no" | null
 
@@ -18,15 +19,20 @@ const STEPS = [
   "Needs Second Opinion",
   "Awaiting Reply",
   "Ready to Action",
-  "Done",
+  "Complete",
 ] as const
+
+type SuspensionAction = "team" | "team_user" | "project" | ""
 
 export default function DecisionForm() {
   const [platform, setPlatform] = useState<YesNo>(null)
+  const [visualDirectory, setVisualDirectory] = useState<YesNo>(null)
   const [highRisk, setHighRisk] = useState<YesNo>(null)
   const [mediumRisk, setMediumRisk] = useState<YesNo>(null)
   const [secondOpinion, setSecondOpinion] = useState<YesNo>(null)
   const [status, setStatus] = useState<string>("Open")
+
+  const [suspensionAction, setSuspensionAction] = useState<SuspensionAction>("")
 
   const handleDone = () => {
     let nextStatus: string = "Open"
@@ -35,7 +41,7 @@ export default function DecisionForm() {
       nextStatus = "Needs Second Opinion"
     } else if (platform === "yes" && (highRisk === "yes" || mediumRisk === "yes")) {
       nextStatus = "Outreach"
-    } else if (highRisk === "yes" || mediumRisk === "yes") {
+    } else if (highRisk === "yes" || mediumRisk === "yes" || visualDirectory === "yes") {
       nextStatus = "Ready to Action"
     } else {
       nextStatus = "Open"
@@ -72,7 +78,11 @@ export default function DecisionForm() {
                       isCompletedOrActive ? "bg-primary" : "bg-muted-foreground/30"
                     }`}
                   />
-                  <span className={`text-[9px] text-center ${isCompletedOrActive ? "font-semibold" : ""}`}>
+                  <span
+                    className={`text-[9px] text-center ${
+                      isCompletedOrActive ? "font-semibold" : ""
+                    }`}
+                  >
                     {step}
                   </span>
                 </div>
@@ -96,7 +106,51 @@ export default function DecisionForm() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-semibold">Give First Opinion</CardTitle>
             </CardHeader>
+
             <CardContent className="space-y-4">
+              {/* NEW QUESTION - Visual Directory */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-foreground">Is this a Visual Directory?</p>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center rounded-sm p-1 hover:bg-muted"
+                          aria-label="Visual Directory info"
+                        >
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[220px] text-xs">
+                        If you encounter a phishing pattern that isn’t in our Visual Directory, add it to Notion with screenshots.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 ${yesClass(visualDirectory, "yes")}`}
+                    onClick={() => setVisualDirectory("yes")}
+                  >
+                    YES
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 ${yesClass(visualDirectory, "no")}`}
+                    onClick={() => setVisualDirectory("no")}
+                  >
+                    NO
+                  </Button>
+                </div>
+              </div>
+
               {/* Question 1 - Platform/Enterprise */}
               <div className="space-y-2">
                 <p className="text-xs text-foreground">Is this a Platform/Enterprise?</p>
@@ -120,10 +174,10 @@ export default function DecisionForm() {
                 </div>
               </div>
 
-              {/* Question 2 - High Risk Signal */}
+              {/* Question 2 - High Risk Signal (textarea removed) */}
               <div className="space-y-2">
                 <p className="text-xs text-foreground">
-                  Have you found at least 1 High Risk Signal? Or Confirm at least 1 High Risk Signal from AI Opinion?
+                 After reviewing the AI opinion, did you confirm at least 1 High-Risk signal?
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -143,16 +197,12 @@ export default function DecisionForm() {
                     NO
                   </Button>
                 </div>
-                <Textarea
-                  placeholder="Paste Signals found"
-                  className="text-xs min-h-[60px]"
-                />
               </div>
 
-              {/* Question 3 - Medium Risk Signal */}
+              {/* Question 3 - Medium Risk Signal (textarea removed) */}
               <div className="space-y-2">
                 <p className="text-xs text-foreground">
-                  Have you found at least 3 Medium Risk Signal? Or Confirm at least 3 Medium Risk Signal from AI Opinion?
+                  After reviewing the AI opinion, did you confirm at least 3 Medium-Risk signals?
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -172,12 +222,31 @@ export default function DecisionForm() {
                     NO
                   </Button>
                 </div>
-                <Textarea
-                  placeholder="Paste Signals found"
-                  className="text-xs min-h-[60px]"
-                />
               </div>
-
+              {/* Question 4 - Good Signals */}
+              <div className="space-y-2">
+                <p className="text-xs text-foreground">
+                  After reviewing the AI opinion, Did you confirm any Non-Risk (Good) signals?
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 ${yesClass(mediumRisk, "yes")}`}
+                    onClick={() => setMediumRisk("yes")}
+                  >
+                    YES
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className={`flex-1 ${yesClass(mediumRisk, "no")}`}
+                    onClick={() => setMediumRisk("no")}
+                  >
+                    NO
+                  </Button>
+                </div>
+              </div>
               {/* Question 4 - Second Opinion */}
               <div className="space-y-2">
                 <p className="text-xs text-foreground">Is a Second Opinion Needed?</p>
@@ -210,13 +279,31 @@ export default function DecisionForm() {
                 <p className="text-xs font-semibold">Suspension Reasons:</p>
                 <Select>
                   <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Drop-down List with Suspension Reasons" />
+                    <SelectValue placeholder="Suspension Reasons" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="phishing">Phishing</SelectItem>
                     <SelectItem value="fraud">Fraud</SelectItem>
                     <SelectItem value="malware">Malware</SelectItem>
                     <SelectItem value="spam">Spam</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Suspension Actions */}
+              <div className="space-y-2">
+                <p className="text-xs font-semibold">Suspension Actions:</p>
+                <Select
+                  value={suspensionAction}
+                  onValueChange={(v) => setSuspensionAction(v as SuspensionAction)}
+                >
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Select an action" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="team">Team</SelectItem>
+                    <SelectItem value="team_user">Team and User</SelectItem>
+                    <SelectItem value="project">Project</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -245,11 +332,39 @@ export default function DecisionForm() {
                 </label>
               </div>
 
-              <div className="flex items-center space-x-2 pt-2">
-                <Checkbox id="no-reinstate" />
-                <label htmlFor="no-reinstate" className="text-xs cursor-pointer">
-                  Do not reinstate
-                </label>
+              <div className="space-y-2 pt-2">
+                {/* Do not reinstate + info */}
+                <div className="flex items-center gap-2">
+                  <Checkbox id="no-reinstate" />
+                  <label htmlFor="no-reinstate" className="text-xs cursor-pointer">
+                    Do not reinstate
+                  </label>
+
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center rounded-sm p-1 hover:bg-muted"
+                          aria-label="Do not reinstate info"
+                        >
+                          <Info className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[220px] text-xs">
+                        Please Select only if is a VD, repetitive abuse or common schemes
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+
+                {/* Not hosted on Vercel */}
+                <div className="flex items-center gap-2">
+                  <Checkbox id="not-hosted-vercel" />
+                  <label htmlFor="not-hosted-vercel" className="text-xs cursor-pointer">
+                    Not hosted on Vercel
+                  </label>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -265,6 +380,3 @@ export default function DecisionForm() {
     </div>
   )
 }
-
-
-
